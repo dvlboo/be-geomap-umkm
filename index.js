@@ -11,15 +11,15 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api', routes);
 
-// app.use('*', (req, res) => {
+app.use((req, res) => {
 
-//   const response = {
-//     data : null,
-//     message : "Route Not Found!!!"
-//   }
+  const response = {
+    data : null,
+    message : "Route Not Found!!!"
+  }
 
-//   res.status(400).json(response)
-// })
+  res.status(404).json(response)
+})
 
 // Error Middleware
 app.use((err, req, res, next) => {
