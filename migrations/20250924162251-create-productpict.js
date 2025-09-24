@@ -2,33 +2,15 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('umkms', {
+    await queryInterface.createTable('placepicts', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      name: {
-        type: Sequelize.STRING
-      },
-      owner: {
-        type: Sequelize.STRING
-      },
-      address: {
-        type: Sequelize.STRING
-      },
-      phone: {
-        type: Sequelize.STRING
-      },
-      story: {
-        type: Sequelize.TEXT('long')
-      },
-      year: {
-        type: Sequelize.INTEGER
-      },
-      location: {
-        type: Sequelize.GEOMETRY('POINT')
+      url: {
+        type: Sequelize.TEXT
       },
       createdAt: {
         allowNull: false,
@@ -45,6 +27,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('umkms');
+    await queryInterface.dropTable('placepicts');
   }
 };

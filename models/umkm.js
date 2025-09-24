@@ -4,19 +4,24 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class umkm extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-      // define association here
+      umkm.belongsToMany(models.type, { foreignKey: 'type_id', as: 'type' }),
+      umkm.hasMany(models.productpict, { foreignKey: 'productpict_id', as: 'product_pict' })
     }
   }
   umkm.init({
-    nama: DataTypes.STRING,
-    email: DataTypes.STRING,
-    password: DataTypes.STRING
+    name: DataTypes.STRING,
+    owner: DataTypes.STRING,
+    phone: DataTypes.STRING,
+    address: DataTypes.STRING,
+    regency: DataTypes.STRING,
+    story: DataTypes.TEXT('long'),
+    year: DataTypes.INTEGER,
+    location: DataTypes.GEOMETRY('POINT'),
+    place_pict: DataTypes.TEXT(),
+    classification: DataTypes.STRING,
+    type_id: DataTypes.INTEGER,
+    productpict_id: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'umkm',
