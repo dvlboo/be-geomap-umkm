@@ -3,16 +3,17 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class payment extends Model {
+  class order extends Model {
     static associate(models) {
-      payment.belongsTo(models.umkm, { foreignKey: 'payment_id' });
+      order.belongsTo(models.umkm, { foreignKey: 'order_id' });
     }
   }
-  payment.init({
+  order.init({
     name: DataTypes.STRING
   }, {
     sequelize,
-    modelName: 'payment',
+    modelName: 'order',
+    paranoid: true,
   });
-  return payment;
+  return order;
 };
