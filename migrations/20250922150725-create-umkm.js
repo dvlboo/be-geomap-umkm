@@ -15,20 +15,44 @@ module.exports = {
       owner: {
         type: Sequelize.STRING
       },
-      address: {
-        type: Sequelize.STRING
-      },
       phone: {
         type: Sequelize.STRING
       },
+      address: {
+        type: Sequelize.STRING
+      },
+      regency: {
+        type: Sequelize.STRING
+      },
       story: {
-        type: Sequelize.TEXT('long')
+        type: Sequelize.TEXT()
       },
       year: {
         type: Sequelize.INTEGER
       },
-      location: {
-        type: Sequelize.GEOMETRY('POINT')
+      place_pict: {
+        type: Sequelize.TEXT
+      },
+      product_pict: {
+        type: Sequelize.TEXT
+      },
+      classification: {
+        type: Sequelize.STRING
+      },
+      location_id: {
+        type: Sequelize.INTEGER
+      },
+      type_id: {
+        type: Sequelize.INTEGER
+      },
+      order_id: {
+        type: Sequelize.INTEGER
+      },
+      payment_id: {
+        type: Sequelize.INTEGER
+      },
+      medsos_id: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,

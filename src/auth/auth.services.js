@@ -1,5 +1,6 @@
 const { createUser, updateUser, deleteUser, findByUsername, findByEmail, findById } = require("./auth.repository")
 const jsonwebtoken = require("jsonwebtoken")
+const bcrypt = require('bcrypt')
 
 exports.register = async (payload) => {
   const userExists = await findByUsername(payload.username)
@@ -38,7 +39,7 @@ exports.login = async (payload) => {
   if (!user) {
     throw new Error(`User with username ${payload.username} not found`)
   }
-  const passwordMatch = bcrypt.compare(payload.password, user.password)
+  const passwordMatch = await bcrypt.compare(payload.password, user.password)
   
   if (!passwordMatch) {
     throw new Error('Invalid password')
@@ -69,6 +70,10 @@ exports.profile = async (id) => {
   if (!user) {
     throw new Error(`User with id ${id} not found`)
   }
+
+  user?.dataValues?.password
+    ? delete user.dataValues.password
+    : delete user.password
 
   return user
 }

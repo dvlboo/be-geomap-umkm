@@ -2,15 +2,18 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('placepicts', {
+    await queryInterface.createTable('locations', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      url: {
-        type: Sequelize.TEXT
+      longitude: {
+        type: Sequelize.FLOAT
+      },
+      latitude: {
+        type: Sequelize.FLOAT
       },
       createdAt: {
         allowNull: false,
@@ -27,6 +30,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('placepicts');
+    await queryInterface.dropTable('locations');
   }
 };

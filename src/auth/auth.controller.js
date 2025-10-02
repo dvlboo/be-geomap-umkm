@@ -1,7 +1,8 @@
-const { register, login, deleteUser, profile } = require("./auth.services")
+const { register, login, deleteUser, profile, update } = require("./auth.services")
 
 exports.register = async (req, res, next) => {
   try {
+
     const { email, password, username } = req.body
 
     if (email == "" ||!email) {
@@ -68,8 +69,7 @@ exports.login = async (req, res, next) => {
 
 exports.profile = async (req, res, next) => {
   try {
-    const { id } = req.params
-    const data = await profile(id)
+    const data = await profile(req.user.id)
     res.status(200).json({
       message: "User profile",
       data
@@ -81,7 +81,7 @@ exports.profile = async (req, res, next) => {
 
 exports.update = async (req, res, next) => {
   try {
-    const { id } = req.params
+    const { id } = req.user
     const {username, email} = req.body
 
     if (username == "" ||!username) {
@@ -111,7 +111,7 @@ exports.update = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   try {
-    const { id } = req.params
+    const { id } = req.user
     const data = await deleteUser(id)
 
     res.status(200).json({
