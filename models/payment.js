@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'payment',
+    paranoid: true,
   });
   return payment;
 };
