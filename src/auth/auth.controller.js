@@ -1,4 +1,4 @@
-const { register, login, deleteUser, profile, update } = require("./auth.services")
+const { register, login, deleteUser, profile, update, forgotPassword, resetPassword, changePassword } = require("./auth.services")
 
 exports.register = async (req, res, next) => {
   try {
@@ -104,6 +104,74 @@ exports.update = async (req, res, next) => {
       data
     })
 
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.changePassword = async (req, res, next) => {
+  try {
+    const { id } = req.user.id
+    const { currentPassword, newPassword } = req.body
+
+    if (currentPassword == "" ||!currentPassword) {
+      return next({
+        status: 400,
+        message: "Old password is required"
+      })
+    }
+
+    if (newPassword == "" ||!newPassword) {
+      return next({
+        status: 400,
+        message: "New password is required"
+      })
+    }
+
+    const data = await changePassword(id, { currentPassword, newPassword })
+
+    res.status(200).json({
+      message: "Password changed successfully",
+      data
+    })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body
+    if (email == "" ||!email) {
+      return next({
+        status: 400,
+        message: "Email is required"
+      })
+    }
+    await forgotPassword(email)
+    res.status(200).json({
+      message: "Password reset successfully, please check your email"
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.resetPassword = async (req, res, next) => {
+  try {
+    const { id, token } = req.params
+    const { password } = req.body
+    if (password == "" ||!password) {
+      return next({
+        status: 400,
+        message: "New password is required"
+      })
+    }
+    await resetPassword(id, token, password)
+    res.status(200).json({
+      message: "Password reset successfully"
+    })
   } catch (error) {
     next(error)
   }

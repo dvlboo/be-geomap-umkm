@@ -98,4 +98,54 @@ exports.update = async (id, payload) => {
   return data
 }
 
+exports.changePassword = async (id, payload) => {
+  const user = await findById(id)
+  if (!user) {
+    throw new Error(`User not Found`)
+  }
+
+  const isPasswordMatch = await bcrypt.compare(payload.currentPassword, user.password)
+  if (!isPasswordMatch) {
+    throw new Error('Current password is incorrect')
+  }
+
+  const newUserPassword = await bcrypt.hashSync(payload.newPassword, 10)
+
+  const updatedUser = await updateUser(id, { 
+    ...user,
+    password: newUserPassword 
+  })
+  return updatedUser
+}
+
+exports.forgotPassword = async (email) => {
+  const user = await findByEmail(email)
+  if (!user) {
+    throw new Error(`User not Found`)
+  }
+
+  const jwtPayload = { id: user.id }
+
+  const token = jsonwebtoken.sign(jwtPayload, process.env.JWT_SECRET, { 
+    expiresIn: '2h'
+  })
+
+  const link = `${process.env.FRONTEND_URL}/reset-password/${user.id}/${token}`
+
+  await sendEmailResetPassword(user.email, link)
+
+  return link
+}
+
+exports.resetPassword = async (id, token, newPassword) => {
+  const user = await findById(id)
+  if (!user) {
+    throw new Error(`User not Found`)
+  }
+
+  jsonwebtoken.verify(token, process.env.JWT_SECRET)
+  const encryptedPassword = await bcrypt.hash(newPassword, 10)
+  return await updateUser(id, { password: encryptedPassword })
+}
+
 exports.deleteUser = async (id) => await deleteUser(id)
