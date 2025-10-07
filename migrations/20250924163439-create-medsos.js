@@ -9,6 +9,14 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      umkm_id : {
+        type: Sequelize.INTEGER,
+        allowNull: true
+      },
+      username : {
+        type: Sequelize.STRING,
+        allowNull: true
+      },
       platform: {
         type: Sequelize.STRING,
         allowNull: true

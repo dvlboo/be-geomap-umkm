@@ -45,11 +45,11 @@ module.exports = {
       type_id: {
         type: Sequelize.INTEGER
       },
-      order_id: {
-        type: Sequelize.INTEGER
+      order: {
+        type: Sequelize.STRING
       },
-      payment_id: {
-        type: Sequelize.INTEGER
+      payment: {
+        type: Sequelize.STRING
       },
       medsos_id: {
         type: Sequelize.INTEGER

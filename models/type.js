@@ -5,7 +5,11 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class type extends Model {
     static associate(models) {
-      type.hasMany(models.umkm, { foreignKey: 'type_id', as: 'umkm' })
+      type.belongsToMany(models.umkm, { 
+        through: models.umkm_type,
+        foreignKey: 'type_id',
+        as: 'umkms'
+      })
     }
   }
   type.init({

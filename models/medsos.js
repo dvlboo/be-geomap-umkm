@@ -9,6 +9,8 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   medsos.init({
+    umkm_id: DataTypes.INTEGER,
+    username: DataTypes.STRING,
     platform: DataTypes.STRING,
     url: DataTypes.TEXT
   }, {
