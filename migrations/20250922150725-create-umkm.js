@@ -42,8 +42,8 @@ module.exports = {
       location_id: {
         type: Sequelize.INTEGER
       },
-      type_id: {
-        type: Sequelize.INTEGER
+      type: {
+        type: Sequelize.STRING
       },
       order: {
         type: Sequelize.STRING
@@ -51,8 +51,8 @@ module.exports = {
       payment: {
         type: Sequelize.STRING
       },
-      medsos_id: {
-        type: Sequelize.INTEGER
+      slug: {
+        type: Sequelize.STRING
       },
       createdAt: {
         allowNull: false,

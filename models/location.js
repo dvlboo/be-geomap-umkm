@@ -5,7 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class location extends Model {
     static associate(models) {
-      location.belongsTo(models.umkm, { foreignKey: 'location_id' })
+      location.hasOne(models.umkm, { foreignKey: 'location_id' })
     }
   }
   location.init({

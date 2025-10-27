@@ -5,13 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class umkm extends Model {
     static associate(models) {
-      umkm.belongsToMany(models.type, { 
-        through: models.umkm_type,
-        foreignKey: 'type_id', 
-        as: 'types'
-       }),
-      umkm.hasMany(models.medsos, { foreignKey: 'medsos_id', as: 'medsos' }),
-      umkm.hasMany(models.order, { foreignKey: 'order_id', as: 'order' }),
+      umkm.hasMany(models.medsos, { foreignKey: 'umkm_id', as: 'medsos' }),
       umkm.belongsTo(models.location, { foreignKey: 'location_id', as: 'location' })
     }
   }
@@ -26,11 +20,11 @@ module.exports = (sequelize, DataTypes) => {
     place_pict: DataTypes.TEXT(),
     product_pict: DataTypes.TEXT(),
     classification: DataTypes.STRING,
+    type: DataTypes.STRING,
     order: DataTypes.STRING,
     payment: DataTypes.STRING,
     location_id: DataTypes.INTEGER,
-    type_id: DataTypes.INTEGER,
-    medsos_id: DataTypes.INTEGER,
+    slug: DataTypes.STRING
   }, {
     sequelize,
     modelName: 'umkm',
