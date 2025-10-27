@@ -1,4 +1,5 @@
 const { createUser, updateUser, deleteUser, findByUsername, findByEmail, findById } = require("./auth.repository")
+const { sendEmailResetPassword } = require("../../utils/mailer")
 const jsonwebtoken = require("jsonwebtoken")
 const bcrypt = require('bcrypt')
 
@@ -95,6 +96,13 @@ exports.update = async (id, payload) => {
 
   const data = await updateUser(id, payload)
   
+  // Remove password from response
+  if (data?.dataValues?.password) {
+    delete data.dataValues.password
+  } else if (data?.password) {
+    delete data.password
+  }
+  
   return data
 }
 
@@ -132,7 +140,7 @@ exports.forgotPassword = async (email) => {
 
   const link = `${process.env.FRONTEND_URL}/reset-password/${user.id}/${token}`
 
-  await sendEmailResetPassword(user.email, link)
+  await sendEmailResetPassword(user.email, link, user)
 
   return link
 }
@@ -148,4 +156,15 @@ exports.resetPassword = async (id, token, newPassword) => {
   return await updateUser(id, { password: encryptedPassword })
 }
 
-exports.deleteUser = async (id) => await deleteUser(id)
+exports.deleteUser = async (id) => {
+  const data = await deleteUser(id)
+  
+  // Remove password from response
+  if (data?.dataValues?.password) {
+    delete data.dataValues.password
+  } else if (data?.password) {
+    delete data.password
+  }
+  
+  return data
+}

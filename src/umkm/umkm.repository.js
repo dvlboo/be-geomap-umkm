@@ -50,12 +50,9 @@ exports.updateUmkm = async ( id, payload ) => {
   
   await umkm.update(payload, { where: { id } })
   
-  // Update medsos only if provided and different
   if (medsosData && medsosData.length > 0) {
-    // Get existing medsos
     const existingMedsos = await medsos.findAll({ where: { umkm_id: id } })
     
-    // Compare if medsos data is different
     const isSame = existingMedsos.length === medsosData.length && 
       existingMedsos.every((existing, index) => {
         const newData = medsosData[index]
@@ -64,13 +61,8 @@ exports.updateUmkm = async ( id, payload ) => {
           existing.url === newData.url && 
           existing.username === newData.username
       })
-    
-    // Only update if data is different
     if (!isSame) {
-      // Delete existing medsos
       await medsos.destroy({ where: { umkm_id: id } })
-      
-      // Create new medsos
       await Promise.all(medsosData.map(med =>
         medsos.create({ ...med, umkm_id: id })
       ))
@@ -89,6 +81,14 @@ exports.updateUmkm = async ( id, payload ) => {
 }
 
 exports.deleteUmkm = async ( id ) => {
-  const data = await umkm.destroy({ where: { id } })
+  const data = await umkm.findOne({ 
+    where: { id },
+    attributes: { exclude: ['location_id'] },
+    include: [
+      { model: location, as: 'location' },
+      { model: medsos, as: 'medsos' }
+    ]
+  })
+  await umkm.destroy({ where: { id } })
   return data
 }

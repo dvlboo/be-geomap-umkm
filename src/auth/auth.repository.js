@@ -28,11 +28,13 @@ exports.updateUser = async ( id, payload ) => {
   if (payload.password) {
     payload.password = bcrypt.hashSync(payload.password, 10)
   }
-  const user = await auth.update(payload, { where: { id } })
+  await auth.update(payload, { where: { id } })
+  const user = await auth.findOne({ where: { id } })
   return user
 }
 
 exports.deleteUser = async ( id ) => {
-  const user = await auth.destroy({ where: { id } })
+  const user = await auth.findOne({ where: { id } })
+  await auth.destroy({ where: { id } })
   return user
 }

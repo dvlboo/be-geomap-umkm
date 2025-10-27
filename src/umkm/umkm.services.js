@@ -38,27 +38,23 @@ exports.create = async (payload) => {
 }
 
 exports.update = async (id, payload) => {
-  // Get existing UMKM to get location_id
   const existingUmkm = await findUmkmById(id)
   
   if (!existingUmkm) {
     throw new Error('UMKM not found')
   }
   
-  // Update location only if latitude or longitude changed
   if (payload.latitude || payload.longitude) {
     const newLat = payload.latitude || existingUmkm.location.latitude
     const newLong = payload.longitude || existingUmkm.location.longitude
     
-    // Only update if values actually changed
     if (newLat !== existingUmkm.location.latitude || newLong !== existingUmkm.location.longitude) {
       await updateLocation(existingUmkm.location.id, {
         latitude: newLat,
         longitude: newLong
       })
     }
-    
-    // Remove from payload so it doesn't try to update UMKM table
+  
     delete payload.latitude
     delete payload.longitude
   }
