@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
   }
 })
 
-exports.sendResetPasswordEmail = async (email, link, user) => {
+exports.sendEmailResetPassword = async (email, link, user) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
