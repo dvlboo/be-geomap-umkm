@@ -1,11 +1,17 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3001;
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const routes = require('./src/routes');
 
 app.use(cors());
 
+app.use(fileUpload({
+  useTempFiles: true,
+  tempFileDir: './temp'
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
