@@ -2,8 +2,10 @@ const { createUMKM, updateUMKM, deleteUMKM, getAllUMKM, getUMKMById } = require(
 
 const router = require('express').Router()
 
-router.post('/add-umkm', createUMKM)
-router.get('/', getAllUMKM)
+router
+  .route('/')
+  .post(createUMKM)
+  .get(getAllUMKM)
 
 router
   .route('/:id')
