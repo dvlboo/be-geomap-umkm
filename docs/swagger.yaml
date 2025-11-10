@@ -1,0 +1,797 @@
+openapi: 3.0.0
+info:
+  title: Geomap UMKM API
+  description: Backend API for Geomap UMKM (Micro, Small, and Medium Enterprises) web application that enables UMKM data management with geographical location and social media integration.
+  version: 1.0.0
+  contact:
+    name: Khai (dvlboo)
+    email: kuhhckr@gmail.com
+
+servers:
+  - url: http://localhost:3001/api
+    description: Development server
+
+tags:
+  - name: Authentication
+    description: User authentication endpoints
+  - name: UMKM
+    description: UMKM management endpoints
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Authorization header using the Bearer scheme
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        username:
+          type: string
+          example: johndoe
+        email:
+          type: string
+          format: email
+          example: john@example.com
+        fullname:
+          type: string
+          example: John Doe
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UMKM:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Bakso Pak Joko
+        owner:
+          type: string
+          example: Joko
+        phone:
+          type: string
+          example: "08123456789"
+        address:
+          type: string
+          example: Jl. Mawar No. 1
+        regency:
+          type: string
+          example: Sampang
+        story:
+          type: string
+          example: Established since 1998, serving the best bakso
+        year:
+          type: integer
+          example: 1998
+        place_pict:
+          type: string
+          example: http://res.cloudinary.com/.../places/xxx.png
+        product_pict:
+          type: string
+          example: http://res.cloudinary.com/.../products/xxx.png
+        classification:
+          type: string
+          example: Warung
+        type:
+          type: string
+          example: Makanan Berat
+        order:
+          type: string
+          example: dine-in
+        payment:
+          type: string
+          example: cash
+        slug:
+          type: string
+          example: bakso-pak-joko
+        link:
+          type: string
+          example: http://localhost:3001/api/umkm/1
+        location:
+          $ref: '#/components/schemas/Location'
+        medsos:
+          type: array
+          items:
+            $ref: '#/components/schemas/Medsos'
+
+    Location:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        longitude:
+          type: number
+          format: float
+          example: 112.456
+        latitude:
+          type: number
+          format: float
+          example: -7.123
+
+    Medsos:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        platform:
+          type: string
+          example: Instagram
+        username:
+          type: string
+          example: baksojoko
+        url:
+          type: string
+          example: https://instagram.com/baksojoko
+        umkm_id:
+          type: integer
+          example: 1
+
+    Error:
+      type: object
+      properties:
+        data:
+          type: object
+          nullable: true
+          example: null
+        message:
+          type: string
+          example: Error message
+
+    Success:
+      type: object
+      properties:
+        message:
+          type: string
+        data:
+          type: object
+
+paths:
+  # ==================== AUTHENTICATION ====================
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register new user
+      description: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+                password:
+                  type: string
+                  format: password
+                  example: password123
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registered successfully
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticate user and get JWT token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                password:
+                  type: string
+                  format: password
+                  example: password123
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login User
+                  data:
+                    type: object
+                    properties:
+                      user:
+                        $ref: '#/components/schemas/User'
+                      token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        '400':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/:
+    get:
+      tags:
+        - Authentication
+      summary: Get user profile
+      description: Get authenticated user profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User profile
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - Authentication
+      summary: Update user profile
+      description: Update authenticated user profile
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+              properties:
+                username:
+                  type: string
+                  example: johndoe
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+      responses:
+        '200':
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User updated successfully
+                  data:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - Authentication
+      summary: Delete user account
+      description: Delete authenticated user account
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User deleted successfully
+                  data:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/change-password:
+    post:
+      tags:
+        - Authentication
+      summary: Change password
+      description: Change user password (requires current password)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentPassword
+                - newPassword
+              properties:
+                currentPassword:
+                  type: string
+                  format: password
+                  example: oldpassword123
+                newPassword:
+                  type: string
+                  format: password
+                  example: newpassword123
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password changed successfully
+                  data:
+                    type: object
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/forgot-password:
+    post:
+      tags:
+        - Authentication
+      summary: Forgot password
+      description: Request password reset link via email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john@example.com
+      responses:
+        '200':
+          description: Reset password email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password reset successfully, please check your email
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /auth/reset-password/{id}/{token}:
+    post:
+      tags:
+        - Authentication
+      summary: Reset password
+      description: Reset password using token from email
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: User ID
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+          description: Reset password token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+                  format: password
+                  example: newpassword123
+      responses:
+        '200':
+          description: Password reset successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password reset successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  # ==================== UMKM ====================
+  /umkm/:
+    get:
+      tags:
+        - UMKM
+      summary: Get all UMKM
+      description: Retrieve all UMKM with location and social media data
+      responses:
+        '200':
+          description: UMKM fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: UMKM fetched successfully
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UMKM'
+
+    post:
+      tags:
+        - UMKM
+      summary: Create new UMKM
+      description: Create a new UMKM with images, location, and social media
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - name
+                - owner
+                - phone
+                - address
+                - regency
+                - story
+                - year
+                - classification
+                - longitude
+                - latitude
+                - type
+                - order
+                - place_pict
+                - product_pict
+              properties:
+                name:
+                  type: string
+                  example: Bakso Pak Joko
+                owner:
+                  type: string
+                  example: Joko
+                phone:
+                  type: string
+                  example: "08123456789"
+                address:
+                  type: string
+                  example: Jl. Mawar No. 1
+                regency:
+                  type: string
+                  example: Sampang
+                story:
+                  type: string
+                  example: Established since 1998, serving the best bakso
+                year:
+                  type: integer
+                  example: 1998
+                classification:
+                  type: string
+                  example: Warung
+                longitude:
+                  type: number
+                  format: float
+                  example: 112.456
+                latitude:
+                  type: number
+                  format: float
+                  example: -7.123
+                type:
+                  type: string
+                  example: Makanan Berat
+                order:
+                  type: string
+                  example: dine-in
+                payment:
+                  type: string
+                  example: cash
+                medsos:
+                  type: string
+                  description: JSON string array of social media
+                  example: '[{"platform":"Instagram","url":"https://instagram.com/baksojoko","username":"baksojoko"}]'
+                place_pict:
+                  type: string
+                  format: binary
+                  description: Place image file
+                product_pict:
+                  type: string
+                  format: binary
+                  description: Product image file
+      responses:
+        '200':
+          description: UMKM created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: UMKM created successfully
+                  data:
+                    $ref: '#/components/schemas/UMKM'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /umkm/{id}:
+    get:
+      tags:
+        - UMKM
+      summary: Get UMKM by ID
+      description: Retrieve a specific UMKM by ID with location and social media data
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: UMKM ID
+      responses:
+        '200':
+          description: UMKM fetched successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: UMKM fetched successfully
+                  data:
+                    $ref: '#/components/schemas/UMKM'
+        '404':
+          description: UMKM not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      tags:
+        - UMKM
+      summary: Update UMKM
+      description: Update UMKM data (all fields optional)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: UMKM ID
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Bakso Pak Joko Updated
+                owner:
+                  type: string
+                  example: Joko
+                phone:
+                  type: string
+                  example: "08999999999"
+                address:
+                  type: string
+                  example: Jl. Mawar No. 1
+                regency:
+                  type: string
+                  example: Sampang
+                story:
+                  type: string
+                  example: Updated story
+                year:
+                  type: integer
+                  example: 1998
+                classification:
+                  type: string
+                  example: Warung
+                longitude:
+                  type: number
+                  format: float
+                  example: 112.789
+                latitude:
+                  type: number
+                  format: float
+                  example: -7.456
+                type:
+                  type: string
+                  example: Makanan Berat
+                order:
+                  type: string
+                  example: dine-in
+                payment:
+                  type: string
+                  example: cash
+                medsos:
+                  type: string
+                  description: JSON string array of social media (will replace all)
+                  example: '[{"platform":"TikTok","url":"https://tiktok.com/@baksojoko","username":"baksojoko"}]'
+                place_pict:
+                  type: string
+                  format: binary
+                  description: New place image file (optional)
+                product_pict:
+                  type: string
+                  format: binary
+                  description: New product image file (optional)
+      responses:
+        '200':
+          description: UMKM updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: UMKM updated successfully
+                  data:
+                    $ref: '#/components/schemas/UMKM'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: UMKM not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - UMKM
+      summary: Delete UMKM
+      description: Delete a UMKM by ID (soft delete)
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: UMKM ID
+      responses:
+        '200':
+          description: UMKM deleted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: UMKM deleted successfully
+                  data:
+                    type: integer
+                    example: 1
+        '404':
+          description: UMKM not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
