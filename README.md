@@ -2,212 +2,151 @@
 
 Backend API for Geomap UMKM (Micro, Small, and Medium Enterprises) web application that enables UMKM data management with geographical location and social media integration.
 
-## 📋 Table of Contents
-
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Database Setup](#database-setup)
-- [Running the Server](#running-the-server)
-- [API Endpoints](#api-endpoints)
-- [Database Structure](#database-structure)
-- [Request Examples](#request-examples)
-
 ## ✨ Features
 
-- ✅ UMKM CRUD operations (Create, Read, Update, Delete)
-- ✅ Upload product and place images to Cloudinary
-- ✅ Geographic location management (latitude, longitude)
-- ✅ Social media management for UMKM
-- ✅ Auto-generate slug from UMKM name
-- ✅ Soft delete (paranoid mode)
-- ✅ File upload with express-fileupload
-- ✅ Optimized updates (skip if data is unchanged)
+- ✅ Complete UMKM CRUD with file uploads
+- ✅ JWT Authentication & Authorization
+- ✅ Geographic location tracking (latitude/longitude)
+- ✅ Social media integration
+- ✅ Cloudinary image storage
+- ✅ Email notifications (forgot password)
+- ✅ Optimized updates & soft deletes
+- ✅ **Interactive API Documentation (Swagger)**
 
 ## 🛠 Tech Stack
 
-- **Runtime:** Node.js
-- **Framework:** Express.js
-- **Database:** PostgreSQL
-- **ORM:** Sequelize
-- **File Upload:** Express-FileUpload
-- **Cloud Storage:** Cloudinary
-- **Authentication:** JWT (JSON Web Token)
-- **Email:** Nodemailer
+**Backend:** Node.js, Express.js | **Database:** PostgreSQL, Sequelize ORM | **Cloud:** Cloudinary | **Auth:** JWT | **Docs:** Swagger/OpenAPI
 
-## 📦 Installation
+## � Quick Start
 
-1. Clone repository:
+### 1. Installation
 ```bash
 git clone https://github.com/dvlboo/be-geomap-umkm.git
 cd be-geomap-umkm/api
-```
-
-2. Install dependencies:
-```bash
 npm install
 ```
 
-## ⚙️ Configuration
-
-1. Create `.env` file in root folder:
+### 2. Environment Setup
+Create `.env` file with your configurations:
 ```env
-# Database
 DB_HOST=localhost
-DB_PORT=5432
 DB_NAME=geomap_umkm
 DB_USER=postgres
 DB_PASSWORD=your_password
-
-# Server
 PORT=3001
-
-# Cloudinary
-CLOUD_NAME=your_cloud_name
-API_KEY=your_api_key
-API_SECRET=your_api_secret
-
-# JWT
+CLOUD_NAME=your_cloudinary_cloud_name
+API_KEY=your_cloudinary_api_key
+API_SECRET=your_cloudinary_api_secret
 JWT_SECRET=your_jwt_secret
-
-# Email (Optional)
 EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_email_password
+EMAIL_PASS=your_app_password
+FRONTEND_URL=http://localhost:3000
 ```
 
-2. Adjust configuration in `config/sequelize.js` if needed.
-
-## 🗄️ Database Setup
-
-1. Create PostgreSQL database:
-```sql
-CREATE DATABASE geomap_umkm;
-```
-
-2. Run migrations:
+### 3. Database Setup
 ```bash
+# Create database
+createdb geomap_umkm
+
+# Run migrations
 npx sequelize db:migrate
-```
 
-3. (Optional) Run seeders:
-```bash
+# (Optional) Seed data
 npx sequelize db:seed:all
 ```
 
-## 🚀 Running the Server
-
-### Development Mode:
+### 4. Run Server
 ```bash
 npm run dev
 ```
 
-### Production Mode:
-```bash
-npm start
+Server: `http://localhost:3001`
+
+## � API Documentation
+
+### Interactive Documentation (Swagger)
+Access the complete interactive API documentation at:
+```
+http://localhost:3001/api-docs
 ```
 
-Server will run at `http://localhost:3001`
+### API Endpoints Summary
 
-## 📡 API Endpoints
+**Authentication** (`/api/auth`)
+- `POST /register` - Register new user
+- `POST /login` - User login
+- `GET /` - Get profile (protected)
+- `PUT /` - Update profile (protected)
+- `DELETE /` - Delete account (protected)
+- `POST /change-password` - Change password (protected)
+- `POST /forgot-password` - Request password reset
+- `POST /reset-password/:id/:token` - Reset password
 
-### Base URL: `/api`
+**UMKM** (`/api/umkm`)
+- `POST /` - Create UMKM (with file upload)
+- `GET /` - Get all UMKM
+- `GET /:id` - Get UMKM by ID
+- `PUT /:id` - Update UMKM (with file upload)
+- `DELETE /:id` - Delete UMKM
 
-### UMKM Endpoints
+### Alternative Documentation
+Postman Collection: [View Docs](https://documenter.getpostman.com/view/44615298/2sB3WmSMhA)
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/` | Create new UMKM |
-| GET | `/` | Get all UMKM |
-| GET | `/:id` | Get UMKM by ID |
-| PUT | `/:id` | Update UMKM |
-| DELETE | `/:id` | Delete UMKM |
+## � Database Schema
 
-## 📊 Database Structure
+**Main Tables:**
+- `umkms` - UMKM business data
+- `locations` - Geographic coordinates (latitude/longitude)
+- `medsos` - Social media links
+- `auths` - User authentication
 
-### Table: `umkms`
-| Field | Type | Description |
-|-------|------|-------------|
-| id | INTEGER | Primary key |
-| name | STRING | UMKM name |
-| owner | STRING | Owner name |
-| phone | STRING | Phone number |
-| address | STRING | Full address |
-| regency | STRING | Regency/District |
-| story | TEXT | UMKM story |
-| year | INTEGER | Established year |
-| place_pict | TEXT | Place image URL |
-| product_pict | TEXT | Product image URL |
-| classification | STRING | Business classification |
-| type | STRING | UMKM type |
-| order | STRING | Order method |
-| payment | STRING | Payment method |
-| location_id | INTEGER | FK to locations table |
-| slug | STRING | URL-friendly name |
+**Relationships:**
+- UMKM → Location (Many-to-One)
+- UMKM → Medsos (One-to-Many)
 
-### Table: `locations`
-| Field | Type | Description |
-|-------|------|-------------|
-| id | INTEGER | Primary key |
-| longitude | FLOAT | Longitude coordinate |
-| latitude | FLOAT | Latitude coordinate |
+## ⚡ Performance Features
 
-### Table: `medsos`
-| Field | Type | Description |
-|-------|------|-------------|
-| id | INTEGER | Primary key |
-| umkm_id | INTEGER | FK to umkms table |
-| platform | STRING | Social media platform |
-| username | STRING | Username |
-| url | TEXT | Profile URL |
-
-## 📝 Request Examples
-
-Full API documentation and Postman collection: [Postman API Docs](https://documenter.getpostman.com/view/44615298/2sB3WmSMhA)
-
-## 🔐 Update Optimization
-
-This API has optimization for updates:
-
-1. **Location:** Only updates if coordinates change
-2. **Medsos:** Only destroy/create if data changes
-3. **Images:** Only upload if new files are sent
-
-This saves database operations and improves performance.
+- **Smart Updates:** Only updates changed data
+- **Soft Deletes:** Data recovery capability
+- **Optimized Queries:** Eager loading with Sequelize
+- **Image Optimization:** Cloudinary auto-optimization
 
 ## 📁 Folder Structure
 
 ```
 api/
 ├── config/
-│   ├── cloudinary.js      # Cloudinary configuration
-│   └── sequelize.js        # Database configuration
-├── migrations/             # Database migrations
-├── models/                 # Sequelize models
-│   ├── auth.js
-│   ├── location.js
-│   ├── medsos.js
-│   ├── type.js
-│   ├── umkm.js
-│   └── umkm_type.js
-├── seeders/               # Database seeders
+│   ├── cloudinary.js           # Cloudinary configuration
+│   ├── sequelize.js            # Database configuration
+|   └── swagger.js              # Swagger configuration
+├── docs/
+│   └── swagger.yaml            # OpenAPI/Swagger documentation
+├── migrations/                 # Database migrations
+├── models/                     # Sequelize models (auth, location, medsos, umkm)
+├── seeders/                    # Database seeders
 ├── src/
-│   ├── auth/              # Auth module
-│   ├── routes/            # Route definitions
-│   └── umkm/              # UMKM module
+│   ├── auth/                   # Authentication module
+│   │   ├── auth.controller.js
+│   │   ├── auth.middleware.js
+│   │   ├── auth.repository.js
+│   │   ├── auth.routes.js
+│   │   └── auth.services.js
+│   ├── routes/
+│   │   └── index.js            # Main router
+│   └── umkm/                   # UMKM module
 │       ├── location/
 │       │   └── location.repository.js
 │       ├── umkm.controller.js
 │       ├── umkm.repository.js
 │       ├── umkm.routes.js
 │       └── umkm.services.js
-├── temp/                  # Temporary upload folder
-├── utils/                 # Utility functions
-│   ├── cloudinary.js
-│   ├── jwtoken.js
-│   └── mailer.js
-├── .env                   # Environment variables
-├── index.js               # Entry point
+├── temp/                       # Temporary file uploads
+├── utils/                      # Utility functions
+│   ├── cloudinary.js           # Image upload utility
+│   ├── jwtoken.js              # JWT token utility
+│   └── mailer.js               # Email utility
+├── .env                        # Environment variables
+├── index.js                    # Application entry point
 └── package.json
 ```
 
