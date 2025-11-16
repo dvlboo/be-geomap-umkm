@@ -9,8 +9,22 @@ const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./docs/swagger.yaml');
 
+// CORS Configuration - Support multiple origins
+const allowedOrigins = [
+  process.env.FE_DEV_URL,
+  process.env.FE_PROD_URL
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -44,6 +58,12 @@ app.use((req, res) => {
 
 // Error Middleware
 app.use((err, req, res, next) => {
+  // Log error for debugging
+  console.error('Error occurred:');
+  console.error('Path:', req.method, req.path);
+  console.error('Message:', err.message);
+  console.error('Stack:', err.stack);
+  
   let statusCode = 500
   let message = "Internal Server Error"
 

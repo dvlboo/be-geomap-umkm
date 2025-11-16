@@ -138,7 +138,7 @@ exports.forgotPassword = async (email) => {
     expiresIn: '2h'
   })
 
-  const link = `${process.env.FRONTEND_URL}/reset-password/${user.id}/${token}`
+  const link = `${process.env.FE_PROD_URL || process.env.FE_DEV_URL}/reset-password/${user.id}/${token}`
 
   await sendEmailResetPassword(user.email, link, user)
 
